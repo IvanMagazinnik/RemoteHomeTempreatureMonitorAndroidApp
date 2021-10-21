@@ -5,6 +5,8 @@ import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.net.Socket
+import java.util.*
+import kotlin.concurrent.thread
 
 private var TERMINATE_BYTE: UByte = 0xeeu
 private var START_BYTE: UByte = 0xeau
@@ -38,6 +40,7 @@ class ClientHandler(client: Socket?) {
                     if (baos.size() >= messageLength && messageLength > 0) {
                         Log.i("ClientHandler",
                             "Message successfully received: ${baos.toByteArray().toHexString()}")
+                        thread { DataStorage.instance.insert(Date(), baos.toString()) }
                         shutdown()
                     }
                 } else {
