@@ -34,22 +34,12 @@ class ClientHandler(client: Socket?) {
                 }
                 if (reader.available() > 0) {
                     baos.write(reader.read())
-                    if (baos.size() >= CommunicationCommandFormat.HEADER_SIZE) {
-                        messageLength = baos.toByteArray()[
-                                CommunicationCommandFormat.LENGTH_OFFSET].toInt() +
-                                CommunicationCommandFormat.CHECKSUM_SIZE
-                    }
-                    if (baos.size() >= messageLength && messageLength > 0) {
-                        Log.i("ClientHandler",
-                            "Message successfully received: ${baos.toByteArray().toHexString()}")
-                        if (CommunicationCommandFormat().validate(baos.toString())) {
-                            thread { TemperatureDataStorage.instance.insert(Date(), baos.toString()) }
-                        }
-                        shutdown()
-                    }
                 } else {
-                    Log.e("ClientHandler","Not Full message was received. " +
-                            "Expected: ${messageLength}, Got: ${baos.size()}")
+                    Log.i("ClientHandler",
+                        "Message successfully received: ${baos.toByteArray().toHexString()}")
+                    if (CommunicationCommandFormat().validate(baos.toByteArray())) {
+                        thread { TemperatureDataStorage.instance.insert(Date(), baos.toString()) }
+                    }
                     shutdown()
                 }
             } catch (ex: Exception) {

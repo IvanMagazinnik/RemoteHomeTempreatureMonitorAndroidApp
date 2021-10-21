@@ -18,12 +18,11 @@ class CommunicationCommandFormat {
         if (bytes.size != 4) {
             throw Exception("wrong len")
         }
-        bytes.reverse()
+//        bytes.reverse()
         return ByteBuffer.wrap(bytes).int
     }
 
-    fun validate(command: String): Boolean {
-        val byteArray = command.toByteArray()
+    fun validate(byteArray: ByteArray): Boolean {
         if (byteArray[0].toUByte() != COMMAND_START.toUByte()) {
             Log.i("CommunicationCommandFormat",
                 "Invalid command start byte: Expected: $COMMAND_START " +
@@ -39,18 +38,20 @@ class CommunicationCommandFormat {
             return false
         }
 
-        val data = byteArray.slice(0..length).toByteArray()
+        val data = byteArray.slice(0 until length).toByteArray()
         val crc32 = CRC32()
         crc32.update(data)
         val calculatedChecksum = crc32.value.toInt()
-        val commandChecksum = toInt32(byteArray.slice(length+1..byteArray.size).toByteArray())
-        if (commandChecksum != calculatedChecksum) {
+        val commandChecksum = toInt32(byteArray.slice(length until byteArray.size).toByteArray()).toUInt() and 0xFFFFFFFF.toUInt()
+        if (commandChecksum != calculatedChecksum.toUInt()) {
             Log.i("CommunicationCommandFormat",
-                "Packet data corrupted: Expected Checksum: $calculatedChecksum" +
+                "Packet data corrupted: Expected Checksum: $calculatedChecksum " +
                         "Got: $commandChecksum")
             return false
         }
-
+        Log.i("CommunicationCommandFormat",
+            "Message successfully validated: $calculatedChecksum " +
+                    "Got: $commandChecksum")
 
         return true
     }
