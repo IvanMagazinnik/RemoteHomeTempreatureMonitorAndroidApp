@@ -5,7 +5,7 @@ import java.net.ServerSocket
 import java.net.Socket
 import kotlin.concurrent.thread
 
-private const val SERVER_PORT = 40765
+private const val SERVER_PORT = 63545
 
 class SocketServer {
     private var server: ServerSocket? = null
@@ -13,7 +13,7 @@ class SocketServer {
 
     fun init() {
         try {
-            server = ServerSocket(63545)
+            server = ServerSocket(SERVER_PORT)
             isAlive = true
             keepAlive()
             Log.i("SocketServer","Server is running on port ${server?.localPort}")
@@ -31,8 +31,8 @@ class SocketServer {
             while(true) {
                 if (server?.isClosed == true || !isAlive ) {
                     init()
-                    Thread.sleep(10000)
                 }
+                Thread.sleep(10000)
             }
         }
     }
@@ -41,7 +41,7 @@ class SocketServer {
         try {
             while (true) {
                 Log.i("SocketServer", "Before client connected")
-                var client: Socket? = null
+                var client: Socket?
                 try {
                     client = server?.accept()
                 } catch (ex: Exception) {
@@ -54,8 +54,8 @@ class SocketServer {
 
                     // Run client in it's own thread.
                     thread {
-                        val tr = thread { ClientHandler(client).run() };
-                        tr.join(10000);
+                        val tr = thread { ClientHandler(client).run() }
+                        tr.join(10000)
                         if (tr.isAlive) {
                             tr.interrupt()
                         }
