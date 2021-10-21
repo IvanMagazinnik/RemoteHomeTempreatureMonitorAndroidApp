@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">HomeTempreatureMonitor</string>
+    <string name="notification_message">Tempreature monitor is running</string>
+    <string name="notification_title">Tempreature Monitor</string>
+    <string name="ticker_text">ololo</string>
+</resources>
