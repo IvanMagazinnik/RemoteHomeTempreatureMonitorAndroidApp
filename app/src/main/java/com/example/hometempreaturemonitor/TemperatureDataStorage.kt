@@ -37,12 +37,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun temperatureDao(): TemperatureDao
 }
 
-class DataStorage() {
+class TemperatureDataStorage() {
     private var db: RoomDatabase? = null
     private var temperatureDao: TemperatureDao? = null
 
     companion object {
-        val instance = DataStorage()
+        val instance = TemperatureDataStorage()
     }
 
     fun init(context: Context) {

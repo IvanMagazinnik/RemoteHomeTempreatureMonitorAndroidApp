@@ -5,12 +5,10 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.*
-import android.os.Process
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
-import java.util.*
 import kotlin.concurrent.thread
 
 
@@ -22,7 +20,7 @@ class ServerService : Service() {
     private var context: Context? = null
     private var serviceLooper: Looper? = null
     private var socketServer: SocketServer? = null
-    private var temperatureDatabase: DataStorage? = null
+    private var temperatureDatabase: TemperatureDataStorage? = null
 
     override fun onCreate() {
         // Start up the thread running the service.  Note that we create a
@@ -32,7 +30,7 @@ class ServerService : Service() {
         context = this
         socketServer = SocketServer()
         socketServer?.init()
-        DataStorage.instance.init(applicationContext)
+        TemperatureDataStorage.instance.init(applicationContext)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
