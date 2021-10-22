@@ -20,6 +20,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "TELEGRAM_API_KEY", apikeyProperties['TELEGRAM_API_KEY'])
+        buildConfigField("String", "TELEGRAM_CHAT_ID", apikeyProperties['TELEGRAM_CHAT_ID'])
     }
 
     buildTypes {
@@ -68,4 +69,8 @@ dependencies {
 
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:2.4.0-beta01"
+}
+
+dependencies {
+    implementation 'io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.0.6'
 }
