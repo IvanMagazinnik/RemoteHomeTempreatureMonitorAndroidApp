@@ -3,27 +3,19 @@ package com.example.hometempreaturemonitor
 import android.util.Log
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
-import java.io.OutputStream
 import java.net.Socket
-import java.util.*
-import kotlin.concurrent.thread
-
-private var TERMINATE_BYTE: UByte = 0xeeu
-private var START_BYTE: UByte = 0xeau
 
 fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 
 class ClientHandler(client: Socket?) {
     private val client: Socket? = client
     private val reader: BufferedInputStream = BufferedInputStream(client?.getInputStream())
-    private val writer: OutputStream? = client?.getOutputStream()
     private var running: Boolean = false
 
     fun run() {
         running = true
-        val baos: ByteArrayOutputStream = ByteArrayOutputStream()
+        val baos = ByteArrayOutputStream()
         var started = false
-        var messageLength = 0
         while (running && !Thread.currentThread().isInterrupted) {
             try {
                 Log.i("ClientHandler","Available bytes: ${reader.available()}")
@@ -37,9 +29,7 @@ class ClientHandler(client: Socket?) {
                 } else {
                     Log.i("ClientHandler",
                         "Message successfully received: ${baos.toByteArray().toHexString()}")
-                    if (CommunicationCommandFormat().validate(baos.toByteArray())) {
-                        thread { TemperatureDataStorage.instance.insert(Date(), baos.toString()) }
-                    }
+                    CommunicationCommandFormat().pushDataToStorage(baos.toByteArray())
                     shutdown()
                 }
             } catch (ex: Exception) {
