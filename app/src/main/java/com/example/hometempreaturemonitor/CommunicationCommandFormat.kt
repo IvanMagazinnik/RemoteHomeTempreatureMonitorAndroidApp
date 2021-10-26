@@ -6,8 +6,6 @@ import java.util.*
 import java.util.zip.CRC32
 import kotlin.concurrent.thread
 
-data class TemperatureRecord(val date: Date, val temp: Float, val humidity: Float)
-
 class CommunicationCommandFormat {
     companion object {
         const val COMMAND_START = 0xEA

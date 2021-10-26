@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.room.*
 import java.util.*
 
+data class TemperatureRecord(val date: String, val temp: String, val humidity: String)
+
 @Entity
 data class Temperature(
     @PrimaryKey(autoGenerate = true) val uid: Int,
@@ -50,8 +52,8 @@ class TemperatureDataStorage() {
     private var temperatureDao: TemperatureDao? = null
 
     companion object {
-        const val MAX_RECORDS_COUNT = 4 // TODO: actualise numbers
-        const val RECORDS_TO_REMAIN = 2 // TODO: actualise numbers
+        const val MAX_RECORDS_COUNT = 2000
+        const val RECORDS_TO_REMAIN = 1000
         val instance = TemperatureDataStorage()
     }
 
@@ -64,8 +66,9 @@ class TemperatureDataStorage() {
         db = localDb
     }
 
-    fun getLastRecord(): Temperature? {
-        return temperatureDao?.getLastRecord()
+    fun getLastRecord(): TemperatureRecord {
+        val record = temperatureDao!!.getLastRecord()
+        return TemperatureRecord(record.time.toString(), record.temp.toString(), record.humidity.toString())
     }
 
     fun deleteOutdatedRecords() {
