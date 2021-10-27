@@ -10,6 +10,14 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import kotlin.concurrent.thread
+import android.os.PowerManager
+
+import android.os.PowerManager.WakeLock
+import android.app.KeyguardManager.KeyguardLock
+
+import android.app.KeyguardManager
+import android.util.Log
+import java.lang.Exception
 
 
 private const val CHANNEL_DEFAULT_IMPORTANCE = "Channel_Id"
@@ -31,7 +39,23 @@ class ServerService : Service() {
         socketServer = SocketServer()
         socketServer?.init()
         TemperatureDataStorage.instance.init(applicationContext)
-        thread { TemperatureDataStorage.instance.deleteOutdatedRecords() }
+    }
+
+    private fun keepDeviceAlive() {
+        while (true) {
+            try {
+                wakeUp()
+            } catch (ex: Exception) {
+                Log.e("main", "Could not wake the device")
+            }
+            Thread.sleep(1000L)
+            try {
+                releaseScreen()
+            } catch (ex: Exception) {
+                Log.e("main", "Could not release the screen")
+            }
+            Thread.sleep(10 * 60 * 1000L /*10 minutes*/)
+        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -41,8 +65,27 @@ class ServerService : Service() {
         // start ID so we know which request we're stopping when we finish the job
         thread { socketServer?.run() }
         thread { TelegramBotWrapper().main() }
+        thread { keepDeviceAlive() }
         // If we get killed, after returning from here, restart
         return START_STICKY
+    }
+
+    private fun wakeUp() {
+        Log.i("main", "Trying to wake the device")
+        val pm: PowerManager = applicationContext.getSystemService(POWER_SERVICE) as PowerManager
+        val wakeLock = pm.newWakeLock(
+            PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+            "hometempreaturemonitor:mainwake"
+        )
+        wakeLock.acquire(1000L);
+    }
+
+    private fun releaseScreen() {
+        Log.i("main", "Releasing the device")
+        val keyguardManager =
+            applicationContext.getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+        val keyguardLock = keyguardManager.newKeyguardLock("hometempreaturemonitor:mainwake")
+        keyguardLock.disableKeyguard()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
