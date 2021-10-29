@@ -66,6 +66,7 @@ class ServerService : Service() {
         thread { socketServer?.run() }
         thread { TelegramBotWrapper.instance.main() }
         thread { keepDeviceAlive() }
+        thread { TemperatureWarnMonitor().main() }
         // If we get killed, after returning from here, restart
         return START_STICKY
     }
