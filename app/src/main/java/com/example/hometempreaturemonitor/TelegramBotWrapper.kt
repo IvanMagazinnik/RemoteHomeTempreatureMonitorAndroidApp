@@ -9,31 +9,37 @@ import com.github.kotlintelegrambot.logging.LogLevel
 
 
 class TelegramBotWrapper {
-    fun main() {
+    private val bot = bot {
 
-        val bot = bot {
+        token = BuildConfig.TELEGRAM_API_KEY
+        timeout = 30
+        logLevel = LogLevel.Network.Body
 
-            token = BuildConfig.TELEGRAM_API_KEY
-            timeout = 30
-            logLevel = LogLevel.Network.Body
-
-            dispatch {
-                text {
-                    var text = ""
-                    try {
-                        val record = TemperatureDataStorage.instance.getLastRecord()
-                        text = "Дата: ${record.date}\nТемпература: ${record.temp}\nВлажность: ${record.humidity}"
-                    } catch (ex: Exception) {
-                        text = "Произошла ошибка при получении результатов из базы данных. Текст ошибки: ${ex.message}"
-                    }
-                    bot.sendMessage(ChatId.fromId(message.chat.id), text = text)
+        dispatch {
+            text {
+                var text = ""
+                try {
+                    val record = TemperatureDataStorage.instance.getLastRecord()
+                    text = "Дата: ${record.date}\nТемпература: ${record.temp}\nВлажность: ${record.humidity}"
+                } catch (ex: Exception) {
+                    text = "Произошла ошибка при получении результатов из базы данных. Текст ошибки: ${ex.message}"
                 }
+                bot.sendMessage(ChatId.fromId(message.chat.id), text = text)
+            }
 
-                telegramError {
-                    println(error.getErrorMessage())
-                }
+            telegramError {
+                println(error.getErrorMessage())
             }
         }
+    }
+
+    companion object {
+        const val MAX_RECORDS_COUNT = 2000
+        const val RECORDS_TO_REMAIN = 1000
+        val instance = TelegramBotWrapper()
+    }
+
+    fun main() {
         bot.startPolling()
     }
 

@@ -64,7 +64,7 @@ class ServerService : Service() {
         // For each start request, send a message to start a job and deliver the
         // start ID so we know which request we're stopping when we finish the job
         thread { socketServer?.run() }
-        thread { TelegramBotWrapper().main() }
+        thread { TelegramBotWrapper.instance.main() }
         thread { keepDeviceAlive() }
         // If we get killed, after returning from here, restart
         return START_STICKY
