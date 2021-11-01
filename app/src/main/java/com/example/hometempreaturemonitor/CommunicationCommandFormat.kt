@@ -2,6 +2,7 @@ package com.example.hometempreaturemonitor
 
 import android.util.Log
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.*
 import java.util.zip.CRC32
 import kotlin.concurrent.thread
@@ -22,14 +23,14 @@ class CommunicationCommandFormat {
         if (bytes.size != 4) {
             throw Exception("toInt32 conversion failed. Expected 4 bytes got: ${bytes.size}")
         }
-        return ByteBuffer.wrap(bytes).int
+        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).int
     }
 
     private fun toFloat(bytes: ByteArray): Float {
         if (bytes.size != 4) {
             throw Exception("toFloat conversion failed. Expected 4 bytes got: ${bytes.size}")
         }
-        return ByteBuffer.wrap(bytes).float
+        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).float
     }
 
     private fun validateCommand(byteArray: ByteArray): ByteArray {

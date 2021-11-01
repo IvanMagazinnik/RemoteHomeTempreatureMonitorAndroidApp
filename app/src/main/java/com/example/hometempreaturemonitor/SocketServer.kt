@@ -16,7 +16,8 @@ class SocketServer {
             server = ServerSocket(SERVER_PORT)
             isAlive = true
             keepAlive()
-            Log.i("SocketServer","Server is running on port ${server?.localPort}")
+            Log.i("SocketServer",
+                "Server is running on ${server?.inetAddress}:${server?.localPort}")
         } catch (ex: Exception) {
             isAlive = false
             Log.e("SocketServer","Exception on server init: ${ex.message}")
