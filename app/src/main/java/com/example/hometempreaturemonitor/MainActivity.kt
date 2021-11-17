@@ -16,6 +16,7 @@ import android.os.PowerManager.WakeLock
 import android.app.KeyguardManager.KeyguardLock
 
 import android.app.KeyguardManager
+import android.content.SharedPreferences
 import android.util.Log
 import java.lang.Exception
 
@@ -119,9 +120,14 @@ class ServerService : Service() {
 }
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        val context=this
+        var sp: SharedPreferences? = null
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        sp = this@MainActivity.getSharedPreferences("main", Context.MODE_PRIVATE)
         Intent(this, ServerService::class.java).also { intent ->
             startService(intent)
         }

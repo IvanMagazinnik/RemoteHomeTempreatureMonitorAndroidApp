@@ -21,6 +21,21 @@ class TelegramBotWrapper {
         dispatch {
             text {
                 var text = ""
+                if (message.text != null) {
+                    val regex = """.*set_min_temp\s*(\d+\.?\d*)""".toRegex()
+                    val matchResult = regex.find(message.text.toString())
+                    if (matchResult != null) {
+                        try {
+                            TemperatureWarnMonitor.setWarnTemp(matchResult.groups[1]!!.value.toString().toFloat())
+                            text += "Установлена новая минимальная температура: ${TemperatureWarnMonitor.getWarnTemp()}\n"
+                            bot.sendMessage(ChatId.fromId(message.chat.id), text = text)
+                        } catch (ex: Exception) {
+                            bot.sendMessage(ChatId.fromId(message.chat.id), text = "Неверный формат сообщения. Ожидается например: set_min_temp 8.0")
+                        }
+
+                    }
+                }
+
                 try {
                     val record = TemperatureDataStorage.instance.getLastRecord()
                     text = "Дата: ${record.date}\nТемпература: ${record.temp}\nВлажность: ${record.humidity}"
@@ -46,7 +61,8 @@ class TelegramBotWrapper {
     fun main() {
         val currDate = Calendar.getInstance().time
         sendMessage("Система была перезагружена. " +
-                "Время запуска: ${currDate.toString()}")
+                "Время запуска: ${currDate.toString()}\n" +
+                "Минимальная температура для отправки предупреждения: ${TemperatureWarnMonitor.getWarnTemp()}")
         bot.startPolling()
     }
 

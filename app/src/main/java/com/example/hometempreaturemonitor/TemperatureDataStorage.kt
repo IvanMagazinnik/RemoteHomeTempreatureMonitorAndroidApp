@@ -52,7 +52,7 @@ class TemperatureDataStorage() {
     private var temperatureDao: TemperatureDao? = null
 
     companion object {
-        const val MAX_RECORDS_COUNT = 2000
+        const val MAX_RECORDS_COUNT = 50000
         const val RECORDS_TO_REMAIN = 1000
         val instance = TemperatureDataStorage()
     }

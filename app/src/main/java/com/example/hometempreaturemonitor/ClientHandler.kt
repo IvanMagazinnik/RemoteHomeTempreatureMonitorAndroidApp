@@ -39,7 +39,7 @@ class ClientHandler(client: Socket?) {
 
             }
         }
-        Log.e("ClientHandler","Thread interrupted or run finished")
+        Log.i("ClientHandler","Thread interrupted or run finished")
     }
     private fun shutdown() {
         running = false
